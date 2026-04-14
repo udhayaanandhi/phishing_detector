@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PhishShield</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+</head>
+<body>
+    <header>
+        <h1>Model Dashboard</h1>
+        <p class="subtitle">Real-time Performance Metrics & Visualizations</p>
+        <div class="nav-links">
+            <a href="/">Scanner</a>
+            <a href="/dashboard">Model Dashboard</a>
+        </div>
+    </header>
+
+    <main class="container" style="max-width: 1000px;">
+        <div class="dashboard-grid">
+            <div class="glass-card metric-card">
+                <div class="metric-value">{{ metrics['accuracy'] }}%</div>
+                <div class="subtitle">Model Accuracy</div>
+            </div>
+            <div class="glass-card metric-card">
+                <div class="metric-value">{{ metrics['samples'] }}</div>
+                <div class="subtitle">Training Samples</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="glass-card chart-card">
+                <h3>Confusion Matrix</h3>
+                <img src="{{ url_for('static', filename='images/confusion_matrix.png') }}" alt="Confusion Matrix">
+                <p class="subtitle" style="font-size:0.9rem; margin-top:1rem;">Displays the true positives vs false positives.</p>
+            </div>
+            
+            <div class="glass-card chart-card">
+                <h3>ROC Curve</h3>
+                <img src="{{ url_for('static', filename='images/roc_curve.png') }}" alt="ROC Curve">
+                <p class="subtitle" style="font-size:0.9rem; margin-top:1rem;">Shows the tradeoff between sensitivity and specificity.</p>
+            </div>
+            
+            <div class="glass-card chart-card" style="grid-column: 1 / -1;">
+                <h3>Top Feature Importances</h3>
+                <img src="{{ url_for('static', filename='images/feature_importance.png') }}" alt="Feature Importance">
+                <p class="subtitle" style="font-size:0.9rem; margin-top:1rem;">Visualizing the most predicting keywords and structures.</p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

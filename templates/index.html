@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Detection AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+</head>
+<body>
+    <header>
+        <h1>PhishShield AI</h1>
+        <p class="subtitle">Advanced Machine Learning for Email Threat Detection</p>
+        <div class="nav-links">
+            <a href="/">Scanner</a>
+            <a href="/dashboard">Model Dashboard</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="glass-card">
+            <h2>Analyze Email content</h2>
+            <div class="input-group">
+                <textarea id="email-text" placeholder="Paste the suspicious email text or URL here..."></textarea>
+                <button id="scan-btn">
+                    <span>Scan for Threats</span>
+                    <div class="loader" id="btn-loader"></div>
+                </button>
+            </div>
+
+            <div class="result-container" id="result-box">
+                <div class="result-label" id="result-label">Processing...</div>
+                <div class="confidence" id="confidence-label"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const btn = document.getElementById('scan-btn');
+        const loader = document.getElementById('btn-loader');
+        const textBtn = btn.querySelector('span');
+        const resultBox = document.getElementById('result-box');
+        const resultLabel = document.getElementById('result-label');
+        const confidenceLabel = document.getElementById('confidence-label');
+        const emailInput = document.getElementById('email-text');
+
+        btn.addEventListener('click', async () => {
+            const text = emailInput.value.trim();
+            if (!text) {
+                alert('Please paste some email text to analyze!');
+                return;
+            }
+
+            // UI Loading state
+            btn.disabled = true;
+            loader.style.display = 'block';
+            textBtn.innerText = 'Scanning...';
+            resultBox.className = 'result-container';
+            resultBox.style.display = 'none';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email_text: text })
+                });
+
+                if (!response.ok) throw new Error('API Error');
+
+                const data = await response.json();
+
+                // Small delay for smooth animation feels authentic
+                setTimeout(() => {
+                    resultBox.style.display = 'block';
+                    if (data.is_phishing) {
+                        resultBox.className = 'result-container phishing';
+                        resultLabel.innerText = '🚨 Phishing Detected!';
+                    } else {
+                        resultBox.className = 'result-container safe';
+                        resultLabel.innerText = '✅ Safe Email';
+                    }
+                    confidenceLabel.innerText = `Confidence: ${data.confidence}`;
+
+                    // Reset btn
+                    btn.disabled = false;
+                    loader.style.display = 'none';
+                    textBtn.innerText = 'Scan for Threats';
+                }, 800);
+
+            } catch (err) {
+                alert('An error occurred during prediction.');
+                btn.disabled = false;
+                loader.style.display = 'none';
+                textBtn.innerText = 'Scan for Threats';
+            }
+        });
+    </script>
+</body>
+</html>
